@@ -14,7 +14,7 @@ class QrController extends Controller
 
         abort_unless($id !== false && ctype_digit($id), 404);
 
-        $surat = Surat::with(['barangBukti', 'penanggungJawab'])->findOrFail((int) $id);
+        $surat = Surat::with('fotoBb')->findOrFail((int) $id);
 
         return view('public.qr', compact('surat'));
     }

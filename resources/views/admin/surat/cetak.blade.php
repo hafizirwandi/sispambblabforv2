@@ -26,7 +26,7 @@
                             <h6 class="underline">BIDANG LABORATORIUM FORENSIK</h6>
                         </div>
                         <div class="label-qr">
-                            <img src="{{ \App\Support\QrGenerator::dataUri(route('qr.show', $s->qrToken())) }}" alt="QR {{ $s->no_surat }}">
+                            <img src="{{ \App\Support\QrGenerator::dataUri(route('qr.show', $s->qrToken()), 320) }}" alt="QR {{ $s->no_surat }}">
                         </div>
                     </div>
 

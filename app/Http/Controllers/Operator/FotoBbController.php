@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Operator;
 use App\Http\Controllers\Controller;
 use App\Models\FotoBb;
 use App\Models\Surat;
+use App\Support\ImageCompressor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class FotoBbController extends Controller
@@ -29,12 +29,12 @@ class FotoBbController extends Controller
 
         $request->validate([
             'foto' => ['required', 'array', 'min:1'],
-            'foto.*' => ['file', 'image', 'max:4096'],
+            // Batas diset longgar (15MB) karena foto akan otomatis di-resize & dikompres saat disimpan.
+            'foto.*' => ['file', 'image', 'max:15360'],
         ]);
 
         foreach ($request->file('foto') as $file) {
-            $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
-            $file->storeAs('foto_bb', $filename, 'public');
+            $filename = ImageCompressor::store($file, 'public', 'foto_bb');
 
             FotoBb::create([
                 'id_surat' => $surat->id_surat,

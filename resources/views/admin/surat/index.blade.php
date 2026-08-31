@@ -10,14 +10,22 @@
         </form>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" id="check-all">
             <label class="form-check-label small" for="check-all">Pilih Semua</label>
         </div>
-        <button type="button" class="btn btn-sm btn-primary" id="btn-cetak" disabled>
-            <x-heroicon-o-printer /> Cetak Label Terpilih
-        </button>
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-primary" id="btn-cetak" disabled>
+                <x-heroicon-o-printer /> Cetak Label Terpilih
+            </button>
+            <button type="button" class="btn btn-sm btn-success" id="btn-tandai" disabled>
+                <x-heroicon-o-check-circle /> Tandai Sudah Dicetak
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" id="btn-hapus-massal" disabled>
+                <x-heroicon-o-trash /> Hapus Terpilih
+            </button>
+        </div>
     </div>
 
     <div class="data-list">
@@ -61,6 +69,10 @@
     <div class="mt-3">
         {{ $surat->links() }}
     </div>
+
+    <form id="bulk-action-form" method="POST" class="d-none">
+        @csrf
+    </form>
 @endsection
 
 @push('scripts')
@@ -69,22 +81,64 @@
         const checkAll = document.getElementById('check-all');
         const rowChecks = document.querySelectorAll('.row-check');
         const btnCetak = document.getElementById('btn-cetak');
+        const btnTandai = document.getElementById('btn-tandai');
+        const btnHapusMassal = document.getElementById('btn-hapus-massal');
+        const bulkForm = document.getElementById('bulk-action-form');
 
-        function updateBtn() {
-            btnCetak.disabled = ![...rowChecks].some(c => c.checked);
+        function checkedIds() {
+            return [...rowChecks].filter(c => c.checked).map(c => c.value);
+        }
+
+        function updateButtons() {
+            const hasChecked = checkedIds().length > 0;
+            btnCetak.disabled = !hasChecked;
+            btnTandai.disabled = !hasChecked;
+            btnHapusMassal.disabled = !hasChecked;
         }
 
         checkAll?.addEventListener('change', function () {
             rowChecks.forEach(c => c.checked = checkAll.checked);
-            updateBtn();
+            updateButtons();
         });
 
-        rowChecks.forEach(c => c.addEventListener('change', updateBtn));
+        rowChecks.forEach(c => c.addEventListener('change', updateButtons));
 
         btnCetak.addEventListener('click', function () {
-            const ids = [...rowChecks].filter(c => c.checked).map(c => c.value);
+            const ids = checkedIds();
             if (ids.length === 0) return;
             window.open(`{{ route('admin.surat.cetak') }}?ids=${ids.join(',')}`, '_blank');
+        });
+
+        function submitBulk(url, confirmMessage) {
+            const ids = checkedIds();
+            if (ids.length === 0) return;
+            if (!confirm(confirmMessage.replace('__COUNT__', ids.length))) return;
+
+            bulkForm.querySelectorAll('input[name="ids[]"]').forEach(el => el.remove());
+            ids.forEach(function (id) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                bulkForm.appendChild(input);
+            });
+
+            bulkForm.action = url;
+            bulkForm.submit();
+        }
+
+        btnTandai.addEventListener('click', function () {
+            submitBulk(
+                '{{ route('admin.surat.tandai-cetak') }}',
+                'Tandai __COUNT__ label surat terpilih sebagai sudah dicetak?'
+            );
+        });
+
+        btnHapusMassal.addEventListener('click', function () {
+            submitBulk(
+                '{{ route('admin.surat.bulk-destroy') }}',
+                'Hapus __COUNT__ surat terpilih beserta seluruh foto barang buktinya? Tindakan ini tidak dapat dibatalkan.'
+            );
         });
     });
 </script>

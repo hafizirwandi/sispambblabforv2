@@ -9,6 +9,7 @@ use App\Models\Surat;
 use App\Services\SuratService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class SuratController extends Controller
@@ -61,6 +62,54 @@ class SuratController extends Controller
         $this->suratService->deleteWithAttachments($surat);
 
         return redirect()->route('admin.surat.index')->with('success', 'Surat dan barang bukti terkait berhasil dihapus.');
+    }
+
+    public function tandaiCetak(Request $request): RedirectResponse
+    {
+        $ids = $this->parseIds($request);
+
+        abort_if(empty($ids), 404, 'Tidak ada label surat yang dipilih.');
+
+        $count = Surat::whereIn('id_surat', $ids)->update([
+            'status' => Surat::STATUS_SELESAI,
+            'updated_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.surat.index')->with('success', "{$count} label surat ditandai sudah dicetak.");
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = $this->parseIds($request);
+
+        abort_if(empty($ids), 404, 'Tidak ada surat yang dipilih.');
+
+        $suratList = Surat::whereIn('id_surat', $ids)->get();
+
+        foreach ($suratList as $surat) {
+            $this->suratService->deleteWithAttachments($surat);
+        }
+
+        return redirect()->route('admin.surat.index')->with('success', $suratList->count().' surat beserta barang bukti terkait berhasil dihapus.');
+    }
+
+    /**
+     * @return int[]
+     */
+    private function parseIds(Request $request): array
+    {
+        $ids = $request->input('ids', []);
+
+        if (is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+
+        return collect($ids)
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public function riwayat(Request $request): View

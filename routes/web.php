@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('surat/cetak', [AdminSuratController::class, 'cetak'])->name('surat.cetak');
         Route::get('surat/riwayat', [AdminSuratController::class, 'riwayat'])->name('surat.riwayat');
+        Route::post('surat/tandai-cetak', [AdminSuratController::class, 'tandaiCetak'])->name('surat.tandai-cetak');
+        Route::post('surat/hapus-massal', [AdminSuratController::class, 'bulkDestroy'])->name('surat.bulk-destroy');
         Route::get('surat', [AdminSuratController::class, 'index'])->name('surat.index');
         Route::get('surat/{surat}/edit', [AdminSuratController::class, 'edit'])->name('surat.edit');
         Route::put('surat/{surat}', [AdminSuratController::class, 'update'])->name('surat.update');

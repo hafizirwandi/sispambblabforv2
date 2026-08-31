@@ -45,6 +45,56 @@ class ImageCompressor
         return $filename;
     }
 
+    /**
+     * Resize + kompres ulang file yang SUDAH ada di storage (mis. foto lama
+     * sebelum fitur kompresi ada). Mengembalikan nama file final (bisa sama
+     * kalau tidak perlu diapa-apakan, atau berbeda kalau dikonversi ke .jpg).
+     */
+    public static function resizeStoredFile(
+        string $disk,
+        string $directory,
+        string $filename,
+        int $maxDimension = 800,
+        int $quality = 80
+    ): string {
+        $path = $directory.'/'.$filename;
+
+        if (! Storage::disk($disk)->exists($path)) {
+            return $filename;
+        }
+
+        $absolutePath = Storage::disk($disk)->path($path);
+        $mime = Storage::disk($disk)->mimeType($path);
+
+        $image = self::load($absolutePath, $mime);
+
+        if (! $image instanceof GdImage) {
+            return $filename;
+        }
+
+        // Sudah dalam batas ukuran & sudah JPEG -> tidak perlu diproses ulang.
+        if (imagesx($image) <= $maxDimension && imagesy($image) <= $maxDimension && $mime === 'image/jpeg') {
+            imagedestroy($image);
+
+            return $filename;
+        }
+
+        $image = self::applyExifOrientation($image, $absolutePath, $mime);
+        $image = self::resizeIfNeeded($image, $maxDimension);
+        $image = self::flattenToWhite($image);
+
+        ob_start();
+        imagejpeg($image, null, $quality);
+        $contents = ob_get_clean();
+        imagedestroy($image);
+
+        $newFilename = Str::uuid().'.jpg';
+        Storage::disk($disk)->put($directory.'/'.$newFilename, $contents);
+        Storage::disk($disk)->delete($path);
+
+        return $newFilename;
+    }
+
     private static function load(string $path, string $mime): ?GdImage
     {
         $image = match ($mime) {

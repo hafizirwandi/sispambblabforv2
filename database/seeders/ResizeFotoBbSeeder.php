@@ -14,8 +14,14 @@ class ResizeFotoBbSeeder extends Seeder
     private const QUALITY = 80;
 
     /**
+     * Batas bawah: hanya foto milik surat dengan tgl_surat >= tanggal ini yang diproses.
+     */
+    private const FROM_DATE = '2025-01-01';
+
+    /**
      * Resize + kompres ulang foto barang bukti yang sudah ada di storage
-     * (foto lama, sebelum fitur kompresi otomatis ada saat upload).
+     * (foto lama, sebelum fitur kompresi otomatis ada saat upload), dibatasi
+     * hanya untuk surat dari awal 2025 sampai sekarang.
      *
      * Jalankan manual: php artisan db:seed --class=ResizeFotoBbSeeder
      */
@@ -25,33 +31,37 @@ class ResizeFotoBbSeeder extends Seeder
         $skippedMissing = 0;
         $alreadyFine = 0;
 
-        FotoBb::orderBy('id_fb')->chunk(50, function ($chunk) use (&$resized, &$skippedMissing, &$alreadyFine) {
-            foreach ($chunk as $foto) {
-                if (! Storage::disk('public')->exists('foto_bb/'.$foto->foto)) {
-                    $skippedMissing++;
+        FotoBb::whereHas('surat', function ($q) {
+            $q->where('tgl_surat', '>=', self::FROM_DATE);
+        })
+            ->orderBy('id_fb')
+            ->chunk(50, function ($chunk) use (&$resized, &$skippedMissing, &$alreadyFine) {
+                foreach ($chunk as $foto) {
+                    if (! Storage::disk('public')->exists('foto_bb/'.$foto->foto)) {
+                        $skippedMissing++;
 
-                    continue;
+                        continue;
+                    }
+
+                    $newFilename = ImageCompressor::resizeStoredFile(
+                        'public',
+                        'foto_bb',
+                        $foto->foto,
+                        self::MAX_DIMENSION,
+                        self::QUALITY
+                    );
+
+                    if ($newFilename === $foto->foto) {
+                        $alreadyFine++;
+
+                        continue;
+                    }
+
+                    $foto->foto = $newFilename;
+                    $foto->saveQuietly();
+                    $resized++;
                 }
-
-                $newFilename = ImageCompressor::resizeStoredFile(
-                    'public',
-                    'foto_bb',
-                    $foto->foto,
-                    self::MAX_DIMENSION,
-                    self::QUALITY
-                );
-
-                if ($newFilename === $foto->foto) {
-                    $alreadyFine++;
-
-                    continue;
-                }
-
-                $foto->foto = $newFilename;
-                $foto->saveQuietly();
-                $resized++;
-            }
-        });
+            });
 
         $this->command?->info(
             "Selesai: {$resized} foto di-resize & dikompres, {$alreadyFine} sudah pas (dilewati), {$skippedMissing} file tidak ditemukan di storage."

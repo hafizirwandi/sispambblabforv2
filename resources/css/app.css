@@ -1,0 +1,388 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+svg[data-slot="icon"] {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+}
+
+:root {
+    --sispam-bg: #f5f6fa;
+    --sispam-surface: #ffffff;
+    --sispam-surface-soft: #f0f2f8;
+    --sispam-border: #e7e9f2;
+    --sispam-text: #2b2f3a;
+    --sispam-text-muted: #868b9a;
+
+    --sispam-primary: #5b6fbe;
+    --sispam-primary-dark: #46579c;
+    --sispam-primary-soft: #eef0fb;
+
+    --sispam-success: #3fa273;
+    --sispam-success-soft: #e7f6ef;
+    --sispam-warning: #c9932e;
+    --sispam-warning-soft: #fbf1de;
+    --sispam-danger: #d9685f;
+    --sispam-danger-soft: #fbeceb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--sispam-bg);
+    color: var(--sispam-text);
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ===== Layout shell ===== */
+.app-shell {
+    min-height: 100vh;
+}
+
+.app-sidebar {
+    width: 264px;
+    background-color: var(--sispam-surface);
+    border-right: 1px solid var(--sispam-border);
+}
+
+.app-sidebar .sispam-brand {
+    color: var(--sispam-text);
+}
+
+.app-sidebar .sispam-brand .brand-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.login-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: min(90vw, 900px);
+    height: min(90vw, 900px);
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.app-sidebar .nav-link {
+    color: var(--sispam-text-muted);
+    border-radius: 10px;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.app-sidebar .nav-link:hover {
+    background-color: var(--sispam-surface-soft);
+    color: var(--sispam-text);
+}
+
+.app-sidebar .nav-link.active {
+    background-color: var(--sispam-primary-soft);
+    color: var(--sispam-primary-dark);
+}
+
+.app-topbar {
+    background-color: var(--sispam-surface);
+    border-bottom: 1px solid var(--sispam-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-main {
+    min-width: 0;
+}
+
+/* ===== Soft surfaces ===== */
+.soft-card {
+    background-color: var(--sispam-surface);
+    border: 1px solid var(--sispam-border);
+    border-radius: 16px;
+}
+
+.login-form-card {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.stat-tile {
+    background-color: var(--sispam-surface);
+    border: 1px solid var(--sispam-border);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+}
+
+.stat-tile .stat-label {
+    color: var(--sispam-text-muted);
+    font-size: 0.82rem;
+}
+
+.stat-tile .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+    background-color: var(--sispam-primary);
+    border-color: var(--sispam-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--sispam-primary-dark);
+    border-color: var(--sispam-primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--sispam-primary);
+    border-color: var(--sispam-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--sispam-primary);
+    border-color: var(--sispam-primary);
+}
+
+.btn, .form-control, .form-select {
+    border-radius: 10px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 10px;
+}
+
+/* ===== Status badge (soft pill) ===== */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.status-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-pill.status-draft { background: var(--sispam-surface-soft); color: var(--sispam-text-muted); }
+.status-pill.status-draft .dot { background: var(--sispam-text-muted); }
+
+.status-pill.status-terkirim { background: var(--sispam-warning-soft); color: var(--sispam-warning); }
+.status-pill.status-terkirim .dot { background: var(--sispam-warning); }
+
+.status-pill.status-selesai { background: var(--sispam-success-soft); color: var(--sispam-success); }
+.status-pill.status-selesai .dot { background: var(--sispam-success); }
+
+/* ===== Data list (replaces tables) ===== */
+.data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.data-row {
+    background-color: var(--sispam-surface);
+    border: 1px solid var(--sispam-border);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.data-row.has-check {
+    padding-left: 0.75rem;
+}
+
+.data-row .data-row-main {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.data-row .data-row-title {
+    font-weight: 600;
+    color: var(--sispam-text);
+    word-break: break-word;
+}
+
+.data-row .data-row-meta {
+    font-size: 0.82rem;
+    color: var(--sispam-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-top: 0.15rem;
+}
+
+.data-row .data-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+}
+
+.data-row-empty {
+    text-align: center;
+    color: var(--sispam-text-muted);
+    padding: 3rem 1rem;
+}
+
+.ttd-thumb {
+    max-height: 46px;
+    max-width: 110px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid var(--sispam-border);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.foto-bb-thumb {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border: 1px solid var(--sispam-border);
+    border-radius: 12px;
+}
+
+/* ===== Cetak label barang bukti (format dokumen resmi, tidak ikut restyle) ===== */
+.label-print-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10mm;
+    padding: 8mm;
+}
+
+.label-card {
+    border: 1px solid #000;
+    padding: 6mm;
+    font-size: 12px;
+    break-inside: avoid;
+}
+
+.label-card .label-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.label-card .label-header h6 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.label-card .label-header h6.underline {
+    text-decoration: underline;
+}
+
+.label-card .label-qr img {
+    width: 70px;
+    height: 70px;
+}
+
+.label-card .label-title {
+    text-align: center;
+    text-decoration: underline;
+    margin: 8px 0;
+    font-weight: 600;
+}
+
+.label-card .label-field {
+    display: flex;
+    margin-bottom: 2px;
+}
+
+.label-card .label-field .label-key {
+    width: 90px;
+    flex-shrink: 0;
+}
+
+.label-card .label-sign {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.label-card .label-sign img.ttd {
+    height: 50px;
+    object-fit: contain;
+}
+
+/* ===== Cetak lampiran foto BB (format dokumen resmi) ===== */
+.lampiran-page {
+    padding: 10mm;
+}
+
+.lampiran-header {
+    text-align: right;
+    font-size: 13px;
+    margin-bottom: 6mm;
+}
+
+.lampiran-foto-block {
+    height: 46vh;
+    margin-bottom: 6mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.lampiran-foto-block img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .label-print-page {
+        padding: 0;
+    }
+
+    .label-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}

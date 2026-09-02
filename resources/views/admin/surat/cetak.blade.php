@@ -20,7 +20,7 @@
             @foreach ($chunk as $s)
                 <div class="label-card">
                     <div class="label-header">
-                        <div>
+                        <div class="kop-text">
                             <h6>KEPOLISIAN REPUBLIK INDONESIA</h6>
                             <h6>DAERAH SUMATERA UTARA</h6>
                             <h6 class="underline">BIDANG LABORATORIUM FORENSIK</h6>

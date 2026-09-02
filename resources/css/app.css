@@ -302,11 +302,16 @@ a {
     align-items: flex-start;
 }
 
+.label-card .label-header .kop-text {
+    text-align: center;
+}
+
 .label-card .label-header h6 {
     margin: 0;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1.3;
+    white-space: nowrap;
 }
 
 .label-card .label-header h6.underline {
@@ -336,7 +341,7 @@ a {
 }
 
 .label-card .label-sign {
-    text-align: right;
+    text-align: center;
     margin-top: 10px;
 }
 
@@ -346,6 +351,11 @@ a {
 }
 
 /* ===== Cetak lampiran foto BB (format dokumen resmi) ===== */
+@page {
+    size: A4;
+    margin: 10mm;
+}
+
 .lampiran-page {
     padding: 10mm;
 }
@@ -353,12 +363,12 @@ a {
 .lampiran-header {
     text-align: right;
     font-size: 13px;
-    margin-bottom: 6mm;
+    margin-bottom: 4mm;
 }
 
 .lampiran-foto-block {
-    height: 46vh;
-    margin-bottom: 6mm;
+    height: 125mm;
+    margin-bottom: 4mm;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -375,6 +385,10 @@ a {
 @media print {
     .no-print {
         display: none !important;
+    }
+
+    .lampiran-page {
+        padding: 0;
     }
 
     .label-print-page {

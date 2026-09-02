@@ -282,7 +282,13 @@ a {
 }
 
 /* ===== Cetak label barang bukti (format dokumen resmi, tidak ikut restyle) ===== */
+@page label-page {
+    size: legal landscape;
+    margin: 8mm;
+}
+
 .label-print-page {
+    page: label-page;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10mm;
@@ -308,7 +314,7 @@ a {
 
 .label-card .label-header h6 {
     margin: 0;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.3;
     white-space: nowrap;
@@ -319,8 +325,8 @@ a {
 }
 
 .label-card .label-qr img {
-    width: 110px;
-    height: 110px;
+    width: 90px;
+    height: 90px;
 }
 
 .label-card .label-title {
@@ -341,6 +347,8 @@ a {
 }
 
 .label-card .label-sign {
+    width: 62%;
+    margin-left: auto;
     text-align: center;
     margin-top: 10px;
 }
